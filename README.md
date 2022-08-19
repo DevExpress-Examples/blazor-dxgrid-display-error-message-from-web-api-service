@@ -1,4 +1,4 @@
-# Product/Platform - Task
+# Grid for Blazor - How to display an unsucces reply from the Web API Service
 
 This is the repository template for creating new examples. Describe the solved task here.
 
