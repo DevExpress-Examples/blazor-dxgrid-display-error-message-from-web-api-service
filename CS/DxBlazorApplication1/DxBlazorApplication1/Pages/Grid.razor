@@ -9,7 +9,7 @@
 @using System.Text.Json.Serialization;
 @using DevExpress.Data.Filtering;
 
-<h3>Change the price to a negative value to display the unsuccess reply.</h3>
+<h3>Change the unit price to a negative value to display the unsuccess reply.</h3>
 
 <DxGrid Data="Products" KeyFieldName="productId"
         DataItemDeleting="Grid_DataItemDeleting2"
@@ -22,10 +22,10 @@
         ValidationEnabled="true">
     <Columns>
         <DxGridCommandColumn DeleteButtonVisible="true" EditButtonVisible="true" NewButtonVisible="true"></DxGridCommandColumn>
-        <DxGridDataColumn FieldName="productId"></DxGridDataColumn>
-        <DxGridDataColumn FieldName="productName"></DxGridDataColumn>
-        <DxGridDataColumn FieldName="unitPrice"></DxGridDataColumn>
-        <DxGridDataColumn FieldName="discontinued"></DxGridDataColumn>
+        <DxGridDataColumn FieldName="productId" Caption="ID"></DxGridDataColumn>
+        <DxGridDataColumn FieldName="productName" Caption="Product Name"></DxGridDataColumn>
+        <DxGridDataColumn FieldName="unitPrice" Caption="Unit Price"></DxGridDataColumn>
+        <DxGridDataColumn FieldName="discontinued" Caption="Discontinued"></DxGridDataColumn>
     </Columns>
     <EditFormTemplate>
         @{
