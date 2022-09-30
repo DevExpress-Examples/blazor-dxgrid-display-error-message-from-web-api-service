@@ -1,4 +1,4 @@
-# Grid for Blazor - How to display an error message from the Web API Service error
+# Grid for Blazor - How to display an error message from the Web API Service
 
 This example demonstrates how to display an error message from the Web API Service when the criteria is not met during editing. 
 
@@ -76,18 +76,6 @@ Display the error message in the EditFormTemplate.
 
 ## Files to Look At
 
-- link.cs (VB: link.vb)
-- link.js
-- ...
+* [Grid.razor](./CS/DxBlazorApplication1/DxBlazorApplication1/Pages/Grid.razor
+* [ProductsController.cs](./CS/MyTestWebService/MyTestWebService/Controllers/ProductsController.cs)
 
-## Documentation
-
-- link
-- link
-- ...
-
-## More Examples
-
-- link
-- link
-- ...
