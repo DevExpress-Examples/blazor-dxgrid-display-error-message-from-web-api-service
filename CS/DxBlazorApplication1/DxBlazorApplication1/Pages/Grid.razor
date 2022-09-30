@@ -12,13 +12,13 @@
 <h3>Change the unit price to a negative value to display the unsuccess reply.</h3>
 
 <DxGrid Data="Products" KeyFieldName="productId"
-        DataItemDeleting="Grid_DataItemDeleting2"
-        EditCanceling="Grid_EditCanceling2"
+        DataItemDeleting="Grid_DataItemDeletingHandler"
+        EditCanceling="Grid_EditCancelingHandler"
         EditNewRowPosition="GridEditNewRowPosition.Bottom"
         EditFormButtonsVisible="@MyEditFormButtonsVisible"
         EditMode="@MyDataGridEditMode"
-        EditModelSaving="Grid_EditModelSaving2"
-        EditStart="Grid_EditStart2"
+        EditModelSaving="Grid_EditModelSavingHandler"
+        EditStart="Grid_EditStartHandler"
         ValidationEnabled="true">
     <Columns>
         <DxGridCommandColumn DeleteButtonVisible="true" EditButtonVisible="true" NewButtonVisible="true"></DxGridCommandColumn>
@@ -84,7 +84,7 @@
     {
         var t = e.Cancel;
     }
-    async Task Grid_DataItemDeleting2(GridDataItemDeletingEventArgs e)
+    async Task Grid_DataItemDeletingHandler(GridDataItemDeletingEventArgs e)
     {
         var reply = await Client.DeleteAsync("https://localhost:5001/api/Products/" + (e.DataItem as Products).productId);
         if (reply.IsSuccessStatusCode)
@@ -95,11 +95,11 @@
         }
     }
 
-    async Task Grid_EditCanceling2(GridEditCancelingEventArgs e)
+    async Task Grid_EditCancelingHandler(GridEditCancelingEventArgs e)
     {
         var t = e.Cancel;
     }
-    async Task Grid_EditModelSaving2(GridEditModelSavingEventArgs e)
+    async Task Grid_EditModelSavingHandler(GridEditModelSavingEventArgs e)
     {
         MyErrorMessage = "";
         HttpResponseMessage reply;
@@ -127,7 +127,7 @@
             MyErrorMessage = await reply.Content.ReadAsStringAsync();
         }
     }
-    async Task Grid_EditStart2(GridEditStartEventArgs e)
+    async Task Grid_EditStartHandler(GridEditStartEventArgs e)
     {
         var t = e.IsNew;
         MyErrorMessage = "";
