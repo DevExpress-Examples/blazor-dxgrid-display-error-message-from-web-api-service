@@ -26,7 +26,7 @@ In the Web API Service controller, return a bad request error when the edited va
         }
 ```
 
-In the razor page, handle the [DxGrid.EditModelSaving](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxGrid.EditModelSaving) event to get the error message from the Web API service. Then, set the event's `e.Cancel` property to "true".
+In the razor page, handle the [DxGrid.EditModelSaving](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxGrid.EditModelSaving) event to get the error message from the Web API service. Then, set the event's `e.Cancel` property to `true`.
 
 ```cs
     private string MyErrorMessage { get; set; }
@@ -60,7 +60,7 @@ In the razor page, handle the [DxGrid.EditModelSaving](https://docs.devexpress.c
     }
 ```
 
-Display the error message in the EditFormTemplate.
+Display the error message in the `EditFormTemplate`.
 
 ```razor
     <EditFormTemplate>
