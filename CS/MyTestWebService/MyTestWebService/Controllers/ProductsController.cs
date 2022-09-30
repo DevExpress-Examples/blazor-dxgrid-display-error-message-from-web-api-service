@@ -50,8 +50,8 @@ namespace MyTestWebService.Controllers
             if (id != products.ProductId) {
                 return BadRequest();
             }
-            if (products.ProductName == "XYI") {
-                return BadRequest("This name is offensive and cannot be used");
+            if (products.UnitPrice < 0) {
+                return BadRequest("Unit Price cannot be less than 0");
             }
             _context.Entry(products).State = EntityState.Modified;
             await _context.SaveChangesAsync();
