@@ -76,6 +76,6 @@ Display the error message in the EditFormTemplate.
 
 ## Files to Look At
 
-* [Grid.razor](./CS/DxBlazorApplication1/DxBlazorApplication1/Pages/Grid.razor
+* [Grid.razor](./CS/DxBlazorApplication1/DxBlazorApplication1/Pages/Grid.razor)
 * [ProductsController.cs](./CS/MyTestWebService/MyTestWebService/Controllers/ProductsController.cs)
 
