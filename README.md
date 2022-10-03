@@ -30,30 +30,16 @@ In the razor page, handle the [DxGrid.EditModelSaving](https://docs.devexpress.c
 
 ```cs
     private string MyErrorMessage { get; set; }
-    async Task Grid_EditModelSavingHandler(GridEditModelSavingEventArgs e)
-    {
-        MyErrorMessage = "";
-        HttpResponseMessage reply;
-        string content = JsonSerializer.Serialize<Products>(e.EditModel as Products);
-        StringContent httpContent = new StringContent(content, System.Text.Encoding.UTF8, "application/json");
-        if (e.IsNew == false)
-        {
-            reply = await Client.PutAsync("https://localhost:5001/api/Products/" + (e.EditModel as Products).productId, httpContent);
-
-        }
-        else
-        {
-            HttpClient client = new HttpClient();
-            reply = await Client.PostAsync("https://localhost:5001/api/Products", httpContent);
-        }
-        if (reply.IsSuccessStatusCode)
-        {
-            var stream = await Client.GetStreamAsync("https://localhost:5001/api/Products");
-            Products = await JsonSerializer.DeserializeAsync
-                    <List<Products>>(stream);
-        }
-        else
-        {
+    async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e) {
+        MyErrorMessage = null;
+        var editedProduct = (Products)e.EditModel;
+        var httpContent = ConvertProductToHttpContent(editedProduct);
+        var reply = e.IsNew == false
+            ? await HttpClient.PutAsync(ProductsUrl + editedProduct.ProductId, httpContent)
+            : await HttpClient.PostAsync(ProductsUrl, httpContent);
+        if (reply.IsSuccessStatusCode) 
+            Products = await LoadDataAsync();
+        else {
             e.Cancel = true;
             MyErrorMessage = await reply.Content.ReadAsStringAsync();
         }
@@ -67,14 +53,19 @@ Display the error message in the `EditFormTemplate`.
         @{
             Products prod = context.EditModel as Products;
         }
+
         <div>Name</div>
-        <DxTextBox @bind-Text="@((context.EditModel as Products).productName)"></DxTextBox>
+        <DxTextBox @bind-Text="prod.ProductName" />
+
         <div>Price</div>
-        <DxSpinEdit @bind-Value="@((context.EditModel as Products).unitPrice)"></DxSpinEdit>
+        <DxSpinEdit @bind-Value="prod.UnitPrice" />
+
         <div>Category</div>
-        <DxSpinEdit @bind-Value="@((context.EditModel as Products).categoryId)"></DxSpinEdit>
+        <DxSpinEdit @bind-Value="prod.CategoryId" />
+
         <div>Discontinued</div>
-        <DxCheckBox @bind-Checked="@((context.EditModel as Products).discontinued)"></DxCheckBox>
+        <DxCheckBox @bind-Checked="prod.Discontinued" />
+
         <div style="color:red">@MyErrorMessage</div>
     </EditFormTemplate>
 ```
