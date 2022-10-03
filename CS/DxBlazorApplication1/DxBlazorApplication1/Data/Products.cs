@@ -2,17 +2,16 @@
 {
     public class Products
     {
-        public int productId { get; set; }
-        public string productName { get; set; }
-        public int? supplierId { get; set; }
-        public int? categoryId { get; set; }
-        public string quantityPerUnit { get; set; }
-        public decimal? unitPrice { get; set; }
-        public short? unitsInStock { get; set; }
-        public short? unitsOnOrder { get; set; }
-        public short? reorderLevel { get; set; }
-        public bool discontinued { get; set; }
-        public string ean13 { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public int? SupplierId { get; set; }
+        public int? CategoryId { get; set; }
+        public string QuantityPerUnit { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public short? UnitsInStock { get; set; }
+        public short? UnitsOnOrder { get; set; }
+        public short? ReorderLevel { get; set; }
+        public bool Discontinued { get; set; }
 
         public virtual Categories category { get; set; }
     }

@@ -1,137 +1,82 @@
-﻿@page "/grid"
+﻿@page "/"
 
 
 <h1>Editing</h1>
-@using DxBlazorApplication1.Data
-@using System.Collections.ObjectModel
-@inject WeatherForecastService ForecastService
+
 @using System.Text.Json
-@using System.Text.Json.Serialization;
-@using DevExpress.Data.Filtering;
+@inject HttpClient HttpClient
 
 <h3>Change the unit price to a negative value to display the error from the Web API service.</h3>
 
-<DxGrid Data="Products" KeyFieldName="productId"
-        DataItemDeleting="Grid_DataItemDeletingHandler"
-        EditCanceling="Grid_EditCancelingHandler"
+<DxGrid Data="Products" KeyFieldName="ProductId"
         EditNewRowPosition="GridEditNewRowPosition.Bottom"
-        EditFormButtonsVisible="@MyEditFormButtonsVisible"
-        EditMode="@MyDataGridEditMode"
-        EditModelSaving="Grid_EditModelSavingHandler"
-        EditStart="Grid_EditStartHandler"
-        ValidationEnabled="true">
+        EditStart="Grid_EditStart"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting">
     <Columns>
-        <DxGridCommandColumn DeleteButtonVisible="true" EditButtonVisible="true" NewButtonVisible="true"></DxGridCommandColumn>
-        <DxGridDataColumn FieldName="productId" Caption="ID"></DxGridDataColumn>
-        <DxGridDataColumn FieldName="productName" Caption="Product Name"></DxGridDataColumn>
-        <DxGridDataColumn FieldName="unitPrice" Caption="Unit Price"></DxGridDataColumn>
-        <DxGridDataColumn FieldName="discontinued" Caption="Discontinued"></DxGridDataColumn>
+        <DxGridCommandColumn />
+        <DxGridDataColumn FieldName="ProductName" />
+        <DxGridDataColumn FieldName="UnitPrice" />
+        <DxGridDataColumn FieldName="Discontinued" />
     </Columns>
     <EditFormTemplate>
         @{
             Products prod = context.EditModel as Products;
         }
+
         <div>Name</div>
-        <DxTextBox @bind-Text="@((context.EditModel as Products).productName)"></DxTextBox>
+        <DxTextBox @bind-Text="prod.ProductName" />
+
         <div>Price</div>
-        <DxSpinEdit @bind-Value="@((context.EditModel as Products).unitPrice)"></DxSpinEdit>
+        <DxSpinEdit @bind-Value="prod.UnitPrice" />
+
         <div>Category</div>
-        <DxSpinEdit @bind-Value="@((context.EditModel as Products).categoryId)"></DxSpinEdit>
+        <DxSpinEdit @bind-Value="prod.CategoryId" />
+
         <div>Discontinued</div>
-        <DxCheckBox @bind-Checked="@((context.EditModel as Products).discontinued)"></DxCheckBox>
+        <DxCheckBox @bind-Checked="prod.Discontinued" />
+
         <div style="color:red">@MyErrorMessage</div>
     </EditFormTemplate>
 </DxGrid>
-<br>
-<br>
-<DxButton Text="Change EditFormButtonsVisible" Click="@((e) => MyEditFormButtonsVisible = !MyEditFormButtonsVisible)"></DxButton>
-
-<DxComboBox @bind-Value="MyDataGridEditMode" TValue="GridEditMode" TData="GridEditMode"
-            Data="enums"></DxComboBox>
 
 @code {
-    private string MyErrorMessage { get; set; }
-    [Inject] protected HttpClient Client { get; set; }
-    private int Test { get; set; } = 1;
-    public Products TestProduct { get; set; }
+    const string ProductsUrl = "https://localhost:31388/api/Products/";
+    List<Products> Products { get; set; }
+    string MyErrorMessage { get; set; }
 
-    DxGrid MyGrid;
-    private bool MyEditFormButtonsVisible { get; set; } = true;
-    private ObservableCollection<WeatherForecast> forecasts { get; set; } = new ObservableCollection<WeatherForecast>();
-    private List<Categories> Categories = new List<Categories>();
-    private List<Products> Products = new List<Products>();
-    private GridEditMode MyDataGridEditMode { get; set; } = GridEditMode.EditForm;
-    List<GridEditMode> enums = ((GridEditMode[])Enum.GetValues(typeof(GridEditMode))).Select(c => c).ToList();
-
-    protected override async Task OnInitializedAsync()
-    {
-        forecasts = new ObservableCollection<WeatherForecast>((await ForecastService.GetManyForecastAsync(DateTime.Now)).ToList<WeatherForecast>());
-        var stream = await Client.GetStreamAsync("https://localhost:5001/api/Products");
-        Products = await JsonSerializer.DeserializeAsync
-                <List<Products>>(stream);
-        var stream2 = await Client.GetStreamAsync("https://localhost:5001/api/Categories");
-        Categories = await JsonSerializer.DeserializeAsync
-            <List<Categories>>(stream2);
-        TestProduct = Products[0];
+    protected override async Task OnInitializedAsync() {
+        Products = await LoadDataAsync();
     }
-    async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e)
-    {
-        forecasts.Remove((WeatherForecast)e.DataItem);
-        e.Reload = true;
+    void Grid_EditStart(GridEditStartEventArgs e) {
+        MyErrorMessage = null;
     }
-
-    async Task Grid_EditCanceling(GridEditCancelingEventArgs e)
-    {
-        var t = e.Cancel;
-    }
-    async Task Grid_DataItemDeletingHandler(GridDataItemDeletingEventArgs e)
-    {
-        var reply = await Client.DeleteAsync("https://localhost:5001/api/Products/" + (e.DataItem as Products).productId);
-        if (reply.IsSuccessStatusCode)
-        {
-            var stream = await Client.GetStreamAsync("https://localhost:5001/api/Products");
-            Products = await JsonSerializer.DeserializeAsync
-                    <List<Products>>(stream);
-        }
-    }
-
-    async Task Grid_EditCancelingHandler(GridEditCancelingEventArgs e)
-    {
-        var t = e.Cancel;
-    }
-    async Task Grid_EditModelSavingHandler(GridEditModelSavingEventArgs e)
-    {
-        MyErrorMessage = "";
-        HttpResponseMessage reply;
-        string content = JsonSerializer.Serialize<Products>(e.EditModel as Products);
-        StringContent httpContent = new StringContent(content, System.Text.Encoding.UTF8, "application/json");
-        if (e.IsNew == false)
-        {
-            reply = await Client.PutAsync("https://localhost:5001/api/Products/" + (e.EditModel as Products).productId, httpContent);
-
-        }
-        else
-        {
-            HttpClient client = new HttpClient();
-            reply = await Client.PostAsync("https://localhost:5001/api/Products", httpContent);
-        }
-        if (reply.IsSuccessStatusCode)
-        {
-            var stream = await Client.GetStreamAsync("https://localhost:5001/api/Products");
-            Products = await JsonSerializer.DeserializeAsync
-                    <List<Products>>(stream);
-        }
-        else
-        {
+    async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e) {
+        MyErrorMessage = null;
+        var editedProduct = (Products)e.EditModel;
+        var httpContent = ConvertProductToHttpContent(editedProduct);
+        var reply = e.IsNew == false
+            ? await HttpClient.PutAsync(ProductsUrl + editedProduct.ProductId, httpContent)
+            : await HttpClient.PostAsync(ProductsUrl, httpContent);
+        if (reply.IsSuccessStatusCode) 
+            Products = await LoadDataAsync();
+        else {
             e.Cancel = true;
             MyErrorMessage = await reply.Content.ReadAsStringAsync();
         }
     }
-    async Task Grid_EditStartHandler(GridEditStartEventArgs e)
-    {
-        var t = e.IsNew;
-        MyErrorMessage = "";
+    async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e) {
+        var reply = await HttpClient.DeleteAsync(ProductsUrl + (e.DataItem as Products).ProductId);
+        if (reply.IsSuccessStatusCode) 
+            Products = await LoadDataAsync();
     }
-
+    async Task<List<Products>> LoadDataAsync() {
+        var stream = await HttpClient.GetStreamAsync(ProductsUrl);
+        return await JsonSerializer.DeserializeAsync<List<Products>>(stream, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+    }
+    HttpContent ConvertProductToHttpContent(Products product) {
+        var content = JsonSerializer.Serialize<Products>(product);
+        return new StringContent(content, System.Text.Encoding.UTF8, "application/json");
+    }
 }
 
