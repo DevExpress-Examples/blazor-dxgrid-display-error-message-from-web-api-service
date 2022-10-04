@@ -75,3 +75,6 @@ Display the error message in the `EditFormTemplate`.
 * [Grid.razor](./CS/DxBlazorApplication1/DxBlazorApplication1/Pages/Grid.razor)
 * [ProductsController.cs](./CS/MyTestWebService/MyTestWebService/Controllers/ProductsController.cs)
 
+## Documentation
+
+- [Get Started with Grid - Edit Data](https://docs.devexpress.com/Blazor/403625/grid/get-started-with-grid#edit-data)
