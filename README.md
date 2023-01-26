@@ -34,14 +34,14 @@ In the razor page, handle the [DxGrid.EditModelSaving](https://docs.devexpress.c
         MyErrorMessage = null;
         var editedProduct = (Products)e.EditModel;
         var httpContent = ConvertProductToHttpContent(editedProduct);
-        var reply = e.IsNew == false
+        var response = e.IsNew == false
             ? await HttpClient.PutAsync(ProductsUrl + editedProduct.ProductId, httpContent)
             : await HttpClient.PostAsync(ProductsUrl, httpContent);
-        if (reply.IsSuccessStatusCode) 
+        if (response.IsSuccessStatusCode) 
             Products = await LoadDataAsync();
         else {
             e.Cancel = true;
-            MyErrorMessage = await reply.Content.ReadAsStringAsync();
+            MyErrorMessage = await response.Content.ReadAsStringAsync();
         }
     }
 ```
@@ -66,7 +66,9 @@ Display the error message in the `EditFormTemplate`.
         <div>Discontinued</div>
         <DxCheckBox @bind-Checked="prod.Discontinued" />
 
-        <div style="color:red">@MyErrorMessage</div>
+        @if (String.IsNullOrEmpty(MyErrorMessage) == false) {        
+            <div style="color:red">@MyErrorMessage</div>
+        }
     </EditFormTemplate>
 ```
 
