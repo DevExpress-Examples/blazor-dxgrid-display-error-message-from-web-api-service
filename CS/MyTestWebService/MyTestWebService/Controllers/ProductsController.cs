@@ -62,22 +62,13 @@ namespace MyTestWebService.Controllers
         [HttpPost]
         public async Task<ActionResult<Products>> PostProducts(Products products)
         {
+            if (products.UnitPrice < 0)
+            {
+                return BadRequest("Unit Price cannot be less than 0");
+            }
             _context.Products.Add(products);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetProducts", new { id = products.ProductId }, products);
-        }
-
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Products>> DeleteProducts(int id)
-        {
-            var products = await _context.Products.FindAsync(id);
-            if (products == null) {
-                return NotFound();
-            }
-            _context.Products.Remove(products);
-            await _context.SaveChangesAsync();
-            return products;
         }
     }
 }
