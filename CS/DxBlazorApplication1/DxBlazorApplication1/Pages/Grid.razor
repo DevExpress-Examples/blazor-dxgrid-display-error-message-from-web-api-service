@@ -1,20 +1,15 @@
 ﻿@page "/"
-
-
-<h1>Editing</h1>
-
 @using System.Text.Json
 @inject HttpClient HttpClient
 
+<h1>Editing</h1>
 <h3>Change the unit price to a negative value to display the error from the Web API service.</h3>
-
 <DxGrid Data="Products" KeyFieldName="ProductId"
         EditNewRowPosition="GridEditNewRowPosition.Bottom"
         EditStart="Grid_EditStart"
-        EditModelSaving="Grid_EditModelSaving"
-        DataItemDeleting="Grid_DataItemDeleting">
+        EditModelSaving="Grid_EditModelSaving">
     <Columns>
-        <DxGridCommandColumn />
+        <DxGridCommandColumn DeleteButtonVisible="false" />
         <DxGridDataColumn FieldName="ProductName" />
         <DxGridDataColumn FieldName="UnitPrice" />
         <DxGridDataColumn FieldName="Discontinued" />
@@ -35,8 +30,10 @@
 
         <div>Discontinued</div>
         <DxCheckBox @bind-Checked="prod.Discontinued" />
-
-        <div style="color:red">@MyErrorMessage</div>
+            
+        @if (String.IsNullOrEmpty(MyErrorMessage) == false) {        
+            <div style="color:red">@MyErrorMessage</div>
+        }
     </EditFormTemplate>
 </DxGrid>
 
@@ -55,20 +52,15 @@
         MyErrorMessage = null;
         var editedProduct = (Products)e.EditModel;
         var httpContent = ConvertProductToHttpContent(editedProduct);
-        var reply = e.IsNew == false
+        var response = e.IsNew == false
             ? await HttpClient.PutAsync(ProductsUrl + editedProduct.ProductId, httpContent)
             : await HttpClient.PostAsync(ProductsUrl, httpContent);
-        if (reply.IsSuccessStatusCode) 
+        if (response.IsSuccessStatusCode) 
             Products = await LoadDataAsync();
         else {
             e.Cancel = true;
-            MyErrorMessage = await reply.Content.ReadAsStringAsync();
+            MyErrorMessage = await response.Content.ReadAsStringAsync();
         }
-    }
-    async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e) {
-        var reply = await HttpClient.DeleteAsync(ProductsUrl + (e.DataItem as Products).ProductId);
-        if (reply.IsSuccessStatusCode) 
-            Products = await LoadDataAsync();
     }
     async Task<List<Products>> LoadDataAsync() {
         var stream = await HttpClient.GetStreamAsync(ProductsUrl);
