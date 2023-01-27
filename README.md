@@ -7,69 +7,68 @@
 
 This example demonstrates how to display an error message from the Web API Service when the criteria is not met during editing. 
 
-![image](https://user-images.githubusercontent.com/69251191/193251341-5e538b39-7308-43db-9e52-d6a77966232f.png)
+![image](image.png)
 
 In the Web API Service controller, return a bad request error when the edited value does not meet the criteria.
 
 ```cs
-        public async Task<IActionResult> PutProducts(int id, Products products)
-        {
-            if (id != products.ProductId) {
-                return BadRequest();
-            }
-            if (products.UnitPrice < 0) {
-                return BadRequest("Unit Price cannot be less than 0");
-            }
-            _context.Entry(products).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
+public async Task<IActionResult> PutProducts(int id, Products products) {
+    if (id != products.ProductId) {
+        return BadRequest();
+    }
+    if (products.UnitPrice < 0) {
+        return BadRequest("Unit Price cannot be less than 0");
+    }
+    _context.Entry(products).State = EntityState.Modified;
+    await _context.SaveChangesAsync();
+    return NoContent();
+}
 ```
 
 In the razor page, handle the [DxGrid.EditModelSaving](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxGrid.EditModelSaving) event to get the error message from the Web API service. Then, set the event's `e.Cancel` property to `true`.
 
 ```cs
-    private string MyErrorMessage { get; set; }
-    async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e) {
-        MyErrorMessage = null;
-        var editedProduct = (Products)e.EditModel;
-        var httpContent = ConvertProductToHttpContent(editedProduct);
-        var response = e.IsNew == false
-            ? await HttpClient.PutAsync(ProductsUrl + editedProduct.ProductId, httpContent)
-            : await HttpClient.PostAsync(ProductsUrl, httpContent);
-        if (response.IsSuccessStatusCode) 
-            Products = await LoadDataAsync();
-        else {
-            e.Cancel = true;
-            MyErrorMessage = await response.Content.ReadAsStringAsync();
-        }
+private string MyErrorMessage { get; set; }
+async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e) {
+    MyErrorMessage = null;
+    var editedProduct = (Products)e.EditModel;
+    var httpContent = ConvertProductToHttpContent(editedProduct);
+    var response = e.IsNew == false
+        ? await HttpClient.PutAsync(ProductsUrl + editedProduct.ProductId, httpContent)
+        : await HttpClient.PostAsync(ProductsUrl, httpContent);
+    if (response.IsSuccessStatusCode) 
+        Products = await LoadDataAsync();
+    else {
+        e.Cancel = true;
+        MyErrorMessage = await response.Content.ReadAsStringAsync();
     }
+}
 ```
 
 Display the error message in the `EditFormTemplate`.
 
 ```razor
-    <EditFormTemplate>
-        @{
-            Products prod = context.EditModel as Products;
-        }
+<EditFormTemplate>
+    @{
+        Products prod = context.EditModel as Products;
+    }
 
-        <div>Name</div>
-        <DxTextBox @bind-Text="prod.ProductName" />
+    <div>Name</div>
+    <DxTextBox @bind-Text="prod.ProductName" />
 
-        <div>Price</div>
-        <DxSpinEdit @bind-Value="prod.UnitPrice" />
+    <div>Price</div>
+    <DxSpinEdit @bind-Value="prod.UnitPrice" />
 
-        <div>Category</div>
-        <DxSpinEdit @bind-Value="prod.CategoryId" />
+    <div>Category</div>
+    <DxSpinEdit @bind-Value="prod.CategoryId" />
 
-        <div>Discontinued</div>
-        <DxCheckBox @bind-Checked="prod.Discontinued" />
+    <div>Discontinued</div>
+    <DxCheckBox @bind-Checked="prod.Discontinued" />
 
-        @if (String.IsNullOrEmpty(MyErrorMessage) == false) {        
-            <div style="color:red">@MyErrorMessage</div>
-        }
-    </EditFormTemplate>
+    @if (String.IsNullOrEmpty(MyErrorMessage) == false) {        
+        <div style="color:red">@MyErrorMessage</div>
+    }
+</EditFormTemplate>
 ```
 
 ## Files to Look At
