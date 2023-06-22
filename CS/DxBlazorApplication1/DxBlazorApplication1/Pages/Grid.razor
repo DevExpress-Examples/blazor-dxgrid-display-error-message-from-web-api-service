@@ -14,26 +14,23 @@
         <DxGridDataColumn FieldName="UnitPrice" />
         <DxGridDataColumn FieldName="Discontinued" />
     </Columns>
-    <EditFormTemplate>
-        @{
-            Products prod = context.EditModel as Products;
-        }
-
-        <div>Name</div>
-        <DxTextBox @bind-Text="prod.ProductName" />
-
-        <div>Price</div>
-        <DxSpinEdit @bind-Value="prod.UnitPrice" />
-
-        <div>Category</div>
-        <DxSpinEdit @bind-Value="prod.CategoryId" />
-
-        <div>Discontinued</div>
-        <DxCheckBox @bind-Checked="prod.Discontinued" />
-            
-        @if (String.IsNullOrEmpty(MyErrorMessage) == false) {        
-            <div style="color:red">@MyErrorMessage</div>
-        }
+    <EditFormTemplate Context="editFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Name">
+                @editFormContext.GetEditor("ProductName")
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Price">
+                @editFormContext.GetEditor("UnitPrice")
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Discontinued">
+                @editFormContext.GetEditor("Discontinued")
+            </DxFormLayoutItem>
+            @if (String.IsNullOrEmpty(MyErrorMessage) == false) {
+                <DxFormLayoutItem ColSpanMd="12">
+                    <div style="color:red">@MyErrorMessage</div>
+                </DxFormLayoutItem>
+            }
+        </DxFormLayout>       
     </EditFormTemplate>
 </DxGrid>
 
