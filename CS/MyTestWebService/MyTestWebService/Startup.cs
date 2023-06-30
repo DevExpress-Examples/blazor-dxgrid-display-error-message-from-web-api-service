@@ -30,8 +30,8 @@ namespace MyTestWebService
         {
             services.AddDbContext<NWINDContext>((sp, options) => {
                 var env = sp.GetRequiredService<IWebHostEnvironment>();
-                var dbPath = Path.Combine(env.ContentRootPath, "Northwind-5e44b51f.mdf");
-                options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;AttachDbFileName=" + dbPath);
+                var dbPath = Path.Combine(env.ContentRootPath, "Northwind.db");
+                options.UseSqlite("Data Source=" + dbPath);
             });
             services.AddControllers();
         }
