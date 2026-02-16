@@ -79,7 +79,7 @@ Display the error message in the `EditFormTemplate`.
 - [Get Started with Grid - Edit Data](https://docs.devexpress.com/Blazor/403625/grid/get-started-with-grid#edit-data)
 - [Tutorial: Create a web API with ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-2.2&tabs=visual-studio)
 <!-- feedback -->
-## Does this example address your development requirements/objectives?
+## Does This Example Address Your Development Requirements/Objectives?
 
 [<img src="https://www.devexpress.com/support/examples/i/yes-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=blazor-grid-display-error-message-from-web-api-service&~~~was_helpful=yes) [<img src="https://www.devexpress.com/support/examples/i/no-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=blazor-grid-display-error-message-from-web-api-service&~~~was_helpful=no)
 
